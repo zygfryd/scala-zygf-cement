@@ -1,0 +1,135 @@
+= cement
+
+This is a tiny macro library for Scala allowing minimum overhead caching of computation results,
+based on its position in source code. JDK 8's `invokedynamic` instructions are generated under the hood
+to remember the result of the first invocation and return them on subsequent invocations.
+
+In essence, `cement` is a factory for anonymous static lazy ``val``s.
+
+Supported Scala versions: `2.12`, `2.13`.
+
+[CAUTION]
+Alpha-quality software.
+
+== Usage
+
+//[horizontal]
+//Artifact:: 
+//+
+//[source,scala]
+//----
+//"net.zygfryd" %% "cement" % "0.1"
+//----
+
+Import::
++
+[source,scala]
+----
+import zygf.cement.{cement, Cemented}
+----
+
+== Cementing expressions
+
+Performing a snippet of initialization code only once has never been this easy.
+Only the first invocation of this method will compile the pattern,
+while subsequent invocations return a cached value. 
+
+[source,scala]
+----
+import java.util.regex._
+
+def words(text: String): Array[String] = {
+  val sep = cement { Pattern.compile("\s+") }
+  sep.split(text)
+}
+----
+
+[WARNING]
+Exercise caution as changing input variables will not cause the cemented expression to re-evaluate:
+
+[source,scala]
+----
+(1 to 3).map { i => cement(i) }.toList == List(1, 1, 1)
+----
+
+== Cementing implicits
+
+If you're expecting to receive implicits that have a non-trivial cost to automatically generate,
+this library has your back:
+
+[source,scala]
+----
+def keepCalmAnd(implicit escapePlan: Cemented[EscapePlan]) = {
+  escapePlan.value.execute()
+}
+----
+
+[NOTE]
+A separate `Cemented[T]` instance is created for each place of invocation, where an implicit
+`Cemented[T]` isn't already provided.
+
+Turning all `implicit Cemented[T]` into `implicit T` is one import away:
+
+[source,scala]
+----
+def bar(implicit ev: Evidence) = ???
+
+def foo(implicit ev: Cemented[Evidence]) = {
+  import Cemented.unwrap
+  bar
+}
+----
+
+To explicitly create an instance of `Cemented[T]`:
+
+[source,scala]
+----
+val cemented1: Cemented[_] = Cemented(expr) // performs cementing magic on expr
+val cemented2: Cemented[_] = Cemented.wrap(expr) // performs no magic, simply allocates an instance
+----
+
+A more complete example and original motivation for creating this library is statically caching
+automatically created logger objects:
+
+[source,scala]
+----
+import org.apache.logging.log4j2._
+import sourcecode
+import zygf.cement.Cemented
+
+object Logging
+{
+  implicit def makeLogger(implicit scope: sourcecode.FullName): Logger = {
+    LogManager.getLogger(scope.value)
+  }
+  
+  def info(message: String)(implicit logger: Cemented[Logger]) = {
+    logger.value.info(message)
+  }
+}
+----
+
+Two, not six, `getLogger` calls would have been made by the following code:
+
+[source,scala]
+----
+(1 to 3).foreach { _ =>
+  Logging.info("foo")
+  Logging.info("bar")
+}
+----
+
+== Cost
+
+Retrieval of a previously cemented expression's value incurs no allocations, dictionary lookups or
+exception handling, it consists of:
+
+ - one constant method handle call, possibly inlined
+ - one `instanceof` check
+ - one checked cast
+
+== FAQ
+
+Can you port it to Scala `2.11`?::
+Sadly the compiler had no `invokedynamic` support back then. We could make a compatibility layer,
+but it'd have to use an expensive dictionary-based approach. 
