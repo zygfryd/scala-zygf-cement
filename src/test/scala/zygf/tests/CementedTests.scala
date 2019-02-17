@@ -37,7 +37,7 @@ class CementedTests extends TestSuite
     }
   }
   
-  testNumEval("unwrap is not magic", 3) { f =>
+  testNumEval("wrap is not magic", 3) { f =>
     implicit def cem: Cemented[Symbol] = Cemented.wrap { f('foo).asInstanceOf[Symbol] }
     (1 to 3).foreach { _ =>
       Cemented.get[Symbol]
