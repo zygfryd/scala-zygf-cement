@@ -43,4 +43,28 @@ class CementedTests extends TestSuite
       Cemented.get[Symbol]
     }
   }
+  
+  {
+    testNumEval("README example", 2) { eval =>
+      import org.apache.logging.log4j._
+      import zygf.cement.Cemented
+      
+      object Logging
+      {
+        implicit def makeAutoLogger(implicit scope: sourcecode.FullName): Logger = {
+          eval(null)
+          LogManager.getLogger(scope.value)
+        }
+        
+        def autoLogger(implicit logger: Cemented[Logger]) = logger.value
+      }
+      
+      import Logging._
+      
+      (1 to 3).foreach { _ =>
+        autoLogger.info("foo")
+        autoLogger.info("bar")
+      }
+    }
+  }
 }
