@@ -39,7 +39,7 @@ while subsequent invocations return a cached value.
 import java.util.regex._
 
 def words(text: String): Array[String] = {
-  val sep = cement { Pattern.compile("\s+") }
+  val sep = cement { Pattern.compile("\\s+") }
   sep.split(text)
 }
 ----
