@@ -12,16 +12,18 @@ sealed abstract case class Cemented[T](value: T) extends CementedBase[T]
 
 object Cemented
 {
-  /** Wrap a [[T]] into a [[Cemented!]]`[`[[T]]`]` instance, without invoking any caching magic */
+  /** Wrap a `T` into a [[Cemented!]]`[T]` instance, without invoking any caching magic
+    * @tparam T
+    */
   def wrap[T](value: T): Cemented[T] = new Cemented[T](value) {}
   
-  /** Implicitly unwrap instances of [[Cemented!]]`[`[[T]]`]` into implicit [[T]]s */
+  /** Implicitly unwrap instances of [[Cemented!]]`[T]` into implicit `T`s */
   implicit def unwrap[T](implicit fixed: CementedBase[T]): T = fixed.value
   
-  /** Summon an implicit [[Cemented!]]`[`[[T]]`]` */
+  /** Summon an implicit [[Cemented!]]`[T]` */
   def get[T](implicit value: Cemented[T]): Cemented[T] = value
   
-  /** Generate an implicit instance of [[Cemented!]]`[`[[T]]`]` from an implicit instance of [[T]], with caching magic */
+  /** Generate an implicit instance of [[Cemented!]]`[T]` from an implicit instance of `T`, with caching magic */
   implicit def gen[T]: Cemented[T] = macro genImpl[T]
   
   def genImpl[T: c.WeakTypeTag](c: blackbox.Context): c.Tree = {
@@ -39,7 +41,7 @@ object Cemented
     }
   }
   
-  /** Wrap a [[T]] into a [[Cemented!]]`[`[[T]]`]` instance, with caching magic */
+  /** Wrap a `T` into a [[Cemented!]]`[T]` instance, with caching magic */
   def apply[T](value: T): Cemented[T] = macro applyImpl[T]
   
   def applyImpl[T: c.WeakTypeTag](c: blackbox.Context)(value: c.Tree): c.Tree = {
