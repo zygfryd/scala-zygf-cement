@@ -18,7 +18,7 @@ Artifact::
 +
 [source,scala]
 ----
-"net.zygfryd" %% "cement" % "0.2"
+"net.zygfryd" %% "cement" % "0.2.1"
 ----
 
 Import::
@@ -120,11 +120,11 @@ import Logging._
 
 == Cost
 
-Retrieval of a previously cemented expression's value incurs no allocations, dictionary lookups or
-exception handling, it consists of:
+Retrieval of a previously cemented expression's value incurs no allocations, dictionary lookups,
+exception handling or locking, it consists of:
 
  - one constant method handle call, possibly inlined
- - one `instanceof` check
+ - one branch on an `instanceof` check
  - one checked cast
 
 == FAQ
@@ -133,3 +133,7 @@ Why is there an asterisk next to `2.11`?::
 The Scala compiler had no `invokedynamic` support back then. For `2.11` we use a different approach,
 equally performant, but with a higher bytecode footprint. A new class is generated for every cemented
 call site, containing a static member and a couple methods. 
+
+What happens when an exception is thrown?::
+Exceptions aren't remembered. The cemented computation will continue to get re-evaluated until it
+successfully returns a value.
