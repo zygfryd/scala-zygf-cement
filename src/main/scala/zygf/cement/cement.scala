@@ -83,7 +83,9 @@ object cement // It's a lowercase object, but it works like a def
     val className = TypeName(c.freshName("Cement"))
     val classIdent = Ident(className)
     
-    val field = ValDef(Modifiers((STATIC | SYNTHETIC | MUTABLE: Long).asInstanceOf[FlagSet]),
+    val field = ValDef(Modifiers((STATIC | SYNTHETIC | MUTABLE: Long).asInstanceOf[FlagSet],
+                                 typeNames.EMPTY,
+                                 Apply(Select(New(Ident(TypeName("volatile"))), termNames.CONSTRUCTOR), Nil) :: Nil),
                        TermName("storage"),
                        Ident(symbolOf[Object]),
                        q"""new ${Placeholder}(classOf[${classIdent}].getMethod("storage"))""")
