@@ -1,6 +1,6 @@
 name := "cement"
 
-version := "0.1"
+version := "0.2"
 
 organization := "net.zygfryd"
 organizationName := "zygfryd's projects"
@@ -15,9 +15,10 @@ homepage := Some(url("https://github.com/zygfryd/scala-zygf-cement"))
 scmInfo := Some(ScmInfo(url("https://github.com/zygfryd/scala-zygf-cement"),
                         "scm:git@github.com:zygfryd/scala-zygf-cement.git"))
 
+lazy val scala211 = "2.11.12"
 lazy val scala212 = "2.12.8"
 lazy val scala213 = "2.13.0-M5"
-lazy val supportedScalaVersions = List(scala212, scala213)
+lazy val supportedScalaVersions = List(scala212, scala213, scala211)
 
 scalaVersion := scala212
 crossScalaVersions := supportedScalaVersions
@@ -25,7 +26,7 @@ crossScalaVersions := supportedScalaVersions
 libraryDependencies ++= Seq("org.scala-lang" % "scala-reflect" % scalaVersion.value,
                             "org.scalatest" %% "scalatest" % "3.0.6-SNAP6" % "test",
                             "org.apache.logging.log4j" % "log4j-api" % "2.11.2" % "test",
-                            "com.lihaoyi" %% "sourcecode" % "0.1.4" % "test")
+                            "com.lihaoyi" %% "sourcecode" % "0.1.5" % "test")
 
 scalacOptions ++= Seq("-sourcepath", (baseDirectory in ThisBuild).value.getAbsolutePath,
                       "-deprecation",

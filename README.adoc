@@ -6,7 +6,7 @@ to remember the result of the first invocation and return them on subsequent inv
 
 In essence, `cement` is a factory for anonymous static lazy ``val``s.
 
-Supported Scala versions: `2.12`, `2.13`.
+Supported Scala versions: `2.11*`, `2.12`, `2.13`.
 
 [CAUTION]
 Alpha-quality software.
@@ -18,7 +18,7 @@ Artifact::
 +
 [source,scala]
 ----
-"net.zygfryd" %% "cement" % "0.1"
+"net.zygfryd" %% "cement" % "0.2"
 ----
 
 Import::
@@ -129,6 +129,7 @@ exception handling, it consists of:
 
 == FAQ
 
-Can you port it to Scala `2.11`?::
-Sadly the compiler had no `invokedynamic` support back then. We could make a compatibility layer,
-but it'd have to use an expensive dictionary-based approach. 
+Why is there an asterisk next to `2.11`?::
+The Scala compiler had no `invokedynamic` support back then. For `2.11` we use a different approach,
+equally performant, but with a higher bytecode footprint. A new class is generated for every cemented
+call site, containing a static member and a couple methods. 

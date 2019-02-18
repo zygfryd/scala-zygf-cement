@@ -18,7 +18,7 @@ object Cemented
   def wrap[T](value: T): Cemented[T] = new Cemented[T](value) {}
   
   /** Implicitly unwrap instances of [[Cemented!]]`[T]` into implicit `T`s */
-  implicit def unwrap[T](implicit fixed: CementedBase[T]): T = fixed.value
+  implicit def unwrap[T](implicit cemented: CementedBase[T]): T = cemented.value
   
   /** Summon an implicit [[Cemented!]]`[T]` */
   def get[T](implicit value: Cemented[T]): Cemented[T] = value

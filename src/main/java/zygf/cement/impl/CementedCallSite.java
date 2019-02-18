@@ -9,7 +9,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public final class CementedCallSite extends ConstantCallSite {
     volatile private Object value;
-    volatile private ReentrantLock lock;
 
     private static final MethodType getterType = MethodType.methodType(Object.class);
 
@@ -25,68 +24,29 @@ public final class CementedCallSite extends ConstantCallSite {
         }
     }
     
-    // TODO: multithreaded tests?
-    
-    public final class Placeholder {
-        @Override
-        public String toString() {
-            return "CementedCallSite.Placeholder";
-        }
-        
-        /** Acquire update lock and return it, or else return null if the value was already set */
-        public Lock startUpdate() {
-            ReentrantLock lock = CementedCallSite.this.lock;
-            
-            if (lock == null) {
-                return null;
-            }
-            
-            lock.lock();
-            if (lock.getHoldCount() > 1) {
-                lock.unlock();
-                throw new IllegalStateException("Circular initialization detected");
-            }
-            
-            if (CementedCallSite.this.lock == null) /* recheck holding lock */ {
-                lock.unlock();
-                return null;
-            }
-            
-            return lock;
-        }
-        
-        /** Release update lock */
-        public void finishUpdate(Lock lock) {
-            lock.unlock();
-        }
-        
+    public final class Placeholder extends zygf.cement.impl.Placeholder {
         /** Set value after acquiring the update lock, then forget the lock */
         public Object setValue(Object newValue) {
             value = newValue;
-            // free the lock, it won't be needed anymore
-            lock = null;
             return newValue;
         }
         
         /** Get the value that was set while we were trying to acquire the update lock */
         public Object getValue() {
-            if (lock != null)
-                throw new IllegalStateException();
             return value;
         }
     }
 
-    private CementedCallSite() throws Throwable {
+    public CementedCallSite() throws Throwable {
         super(getterType, initializer);
         value = new Placeholder();
-        lock = new ReentrantLock(false);
     }
 
     private static MethodHandle init(CementedCallSite self) {
         return getter.bindTo(self);
     }
 
-    Object get() {
+    public Object get() {
         return value;
     }
 
