@@ -32,6 +32,18 @@ class cementTests extends TestSuite
     assert(cem2("baz") == "foo")
   }
   
+  testNumEval("{} captured whole", 2) { f =>
+    def cem(in: Any) = {
+      cement {
+        f(null)
+        f(in)
+      }
+    }
+    assert(cem("foo") == "foo")
+    assert(cem("bar") == "foo")
+    assert(cem("baz") == "foo")
+  }
+  
   testNumEval("README warning", 1) { f =>
     (1 to 3).map { i => cement(f(i)) }.toList == List(1, 1, 1)
   }
