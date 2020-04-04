@@ -21,7 +21,7 @@ object cement // It's a lowercase object, but it works like a def
                                                                    def isScala212: Boolean } }]
           val settings = really_?.settings
           
-          settings.isScala211 && ! Try(settings.isScala212).getOrElse(false)
+          !Try(settings.isScala212).getOrElse(false) && Try(settings.isScala211).getOrElse(false)
         }
       case _ =>
     }

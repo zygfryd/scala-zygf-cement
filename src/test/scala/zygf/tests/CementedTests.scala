@@ -9,7 +9,7 @@ class CementedTests extends TestSuite
   }
   
   testNumEval("works per implicit binding", 4) { f =>
-    implicit def cem: Symbol = f('foo).asInstanceOf[Symbol]
+    implicit def cem: Symbol = f(Symbol("foo")).asInstanceOf[Symbol]
     implicitly[Cemented[Symbol]]
     implicitly[Cemented[Symbol]]
     Cemented.get[Symbol]
@@ -17,28 +17,28 @@ class CementedTests extends TestSuite
   }
   
   testNumEval("but caches for 1 binding", 1) { f =>
-    implicit def cem: Symbol = f('foo).asInstanceOf[Symbol]
+    implicit def cem: Symbol = f(Symbol("foo")).asInstanceOf[Symbol]
     (1 to 3).foreach { _ =>
       implicitly[Cemented[Symbol]]
     }
   }
   
   testNumEval("without it, there's no caching", 3) { f =>
-    implicit def cem: Symbol = f('foo).asInstanceOf[Symbol]
+    implicit def cem: Symbol = f(Symbol("foo")).asInstanceOf[Symbol]
     (1 to 3).foreach { _ =>
       implicitly[Symbol]
     }
   }
   
   testNumEval("apply is magic", 1) { f =>
-    implicit def cem: Cemented[Symbol] = Cemented { f('foo).asInstanceOf[Symbol] }
+    implicit def cem: Cemented[Symbol] = Cemented { f(Symbol("foo")).asInstanceOf[Symbol] }
     (1 to 3).foreach { _ =>
       Cemented.get[Symbol]
     }
   }
   
   testNumEval("wrap is not magic", 3) { f =>
-    implicit def cem: Cemented[Symbol] = Cemented.wrap { f('foo).asInstanceOf[Symbol] }
+    implicit def cem: Cemented[Symbol] = Cemented.wrap { f(Symbol("foo")).asInstanceOf[Symbol] }
     (1 to 3).foreach { _ =>
       Cemented.get[Symbol]
     }
