@@ -67,4 +67,10 @@ class CementedTests extends TestSuite
       }
     }
   }
+  
+  test("unwrap compiles") {
+    implicit val cemented = Cemented.wrap("foo")
+    implicit val unwrapped: String = Cemented.unwrap
+    assertCompiles("implicitly[String]")
+  }
 }

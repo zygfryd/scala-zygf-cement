@@ -1,6 +1,6 @@
 package zygf.tests
 
-class TestSuite extends org.scalatest.FunSuite
+class TestSuite extends org.scalatest.funsuite.AnyFunSuite
 {
   def testNumEval(name: String, count: Int)(body: (Any => Any) => Any) = test(name) {
     var i = 0

@@ -20,7 +20,7 @@
           <option value="zygf" />
         </array>
       </option>
-      <option name="DO_NOT_ALIGN_BLOCK_EXPR_PARAMS" value="true" />
+      <option name="USE_SCALADOC2_FORMATTING" value="true" />
       <option name="SPACES_IN_ONE_LINE_BLOCKS" value="true" />
       <option name="SPACES_AROUND_AT_IN_PATTERNS" value="true" />
       <option name="ALIGN_TYPES_IN_MULTILINE_DECLARATIONS" value="true" />

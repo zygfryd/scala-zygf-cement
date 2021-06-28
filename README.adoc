@@ -6,7 +6,7 @@ to remember the result of the first invocation and return them on subsequent inv
 
 In essence, `cement` is a factory for anonymous static lazy ``val``s.
 
-Supported Scala versions: `2.11*`, `2.12`, `2.13`.
+Supported Scala versions: `2.11*`, `2.12`, `2.13`, `3.0*`. Support for Scala `3.0` is experimental.
 
 [CAUTION]
 Alpha-quality software.
@@ -18,7 +18,7 @@ Artifact::
 +
 [source,scala]
 ----
-"net.zygfryd" %% "cement" % "0.2.2"
+"net.zygfryd" %% "cement" % "0.3.0"
 ----
 
 Import::
@@ -67,18 +67,6 @@ def keepCalmAnd(implicit escapePlan: Cemented[EscapePlan]) = {
 [NOTE]
 A separate `Cemented[T]` instance is created for each place of invocation, where an implicit
 `Cemented[T]` isn't already provided.
-
-Turning all `implicit Cemented[T]` into `implicit T` is one import away:
-
-[source,scala]
-----
-def bar(implicit ev: Evidence) = ???
-
-def foo(implicit ev: Cemented[Evidence]) = {
-  import Cemented.unwrap
-  bar
-}
-----
 
 To explicitly create an instance of `Cemented[T]`:
 
@@ -129,10 +117,10 @@ exception handling or locking, it consists of:
 
 == FAQ
 
-Why is there an asterisk next to `2.11`?::
-The Scala compiler had no `invokedynamic` support back then. For `2.11` we use a different approach,
-equally performant, but with a higher bytecode footprint. A new class is generated for every cemented
-call site, containing a static member and a couple methods. 
+Why is there an asterisk next to `2.11` and `3.0`?::
+The Scala `2.11` and `3.0` compilers have no support for `invokedynamic` in macros.
+We use a different approach, equally performant, but with a higher bytecode footprint.
+A new class is generated for every cemented call site, containing a static field. 
 
 What happens when an exception is thrown?::
 Exceptions aren't remembered. The cemented computation will continue to get re-evaluated until it

@@ -2,13 +2,7 @@ package zygf.cement
 
 import scala.reflect.macros.blackbox
 
-/** Base class purely to make [[Cemented.unwrap]] non-circular via [[Cemented.gen]] */
-sealed abstract class CementedBase[T]
-{
-  def value: T
-}
-
-sealed abstract case class Cemented[T](value: T) extends CementedBase[T]
+sealed abstract case class Cemented[T](value: T)
 
 object Cemented
 {
@@ -17,8 +11,8 @@ object Cemented
     */
   def wrap[T](value: T): Cemented[T] = new Cemented[T](value) {}
   
-  /** Implicitly unwrap instances of [[Cemented!]]`[T]` into implicit `T`s */
-  implicit def unwrap[T](implicit cemented: CementedBase[T]): T = cemented.value
+  /** Unwrap instances of [[Cemented!]]`[T]` into `T`s */
+  def unwrap[T](implicit cemented: Cemented[T]): T = cemented.value
   
   /** Summon an implicit [[Cemented!]]`[T]` */
   def get[T](implicit value: Cemented[T]): Cemented[T] = value

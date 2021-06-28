@@ -37,3 +37,10 @@ class FallbackPlaceholder(val getter: Method) extends Placeholder
 {
   override def getValue = getter.invoke(null)
 }
+
+class DottyPlaceholder(cls: Class[_]) extends Placeholder
+{
+  val field = cls.getDeclaredField("storage")
+  field.setAccessible(true)
+  override def getValue = field.get(null)
+}
